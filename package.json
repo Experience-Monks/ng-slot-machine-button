@@ -31,5 +31,28 @@
     "@angular/compiler-cli": "^5.0.0",
     "@angular/language-service": "^5.0.0",
     "typescript": "~2.4.2"
-  }
+  },
+  "description": "Angular 2+ Slot Machine Button Component",
+  "main": "index.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jam3/ng-slot-machine-button.git"
+  },
+  "keywords": [
+    "angular2",
+    "angular4",
+    "angular5",
+    "slot machine effect",
+    "slot machine button",
+    "angular2 component",
+    "angular4 component",
+    "angular5 component",
+    "angular2+ component",
+    "angular2+"
+  ],
+  "author": "Neo <neo.li@jam3.com> (https://github.com/neo)",
+  "bugs": {
+    "url": "https://github.com/Jam3/ng-slot-machine-button/issues"
+  },
+  "homepage": "https://github.com/Jam3/ng-slot-machine-button#readme"
 }

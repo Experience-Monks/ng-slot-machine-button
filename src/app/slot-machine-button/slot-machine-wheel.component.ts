@@ -8,7 +8,7 @@ import { Component, Input, ElementRef } from '@angular/core';
 export class SlotMachineWheelComponent {
 
   @Input() groupID: number;
-  @Input() delay: number = 0;
+  @Input() delay = 0;
 
   constructor(public element: ElementRef) { }
 

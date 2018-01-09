@@ -1,3 +1,4 @@
+// tslint:disable-next-line:max-line-length
 import { Component, AfterContentInit, Input, ContentChildren, HostListener, QueryList, ElementRef } from '@angular/core';
 import { Expo, TimelineLite } from 'gsap';
 

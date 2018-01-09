@@ -47,22 +47,30 @@ export class SlotMachineButtonComponent implements AfterContentInit {
     this.activeY = this.bottomToTop ? '-50%' : '0%';
     this.masterTimeline = new TimelineLite({ paused: true });
 
-    const timelines = this.wheels.filter(wheel => this.groupID ? this.groupID === wheel.groupID : true).map(wheel => {
+    this.wheels.filter(wheel => this.groupID ? this.groupID === wheel.groupID : true).forEach(wheel => {
       const container: HTMLElement = wheel.element.nativeElement;
       const parts = container.children;
       if (parts.length !== 2) {
         throw new Error('Each wheel should have exact 2 direct children as the idle and active parts');
       }
+      const fadeDuration = this.fadeDuration || this.duration;
+      if (this.duration <= 0) {
+        throw new Error('Duration must be greater than 0');
+      }
+      if (fadeDuration <= 0) {
+        throw new Error('FadeDuration must be greater than 0');
+      }
 
       const timeline = new TimelineLite();
-      timeline.fromTo(container, this.duration, { y: this.idleY }, { y: this.activeY, ease: this.ease }, 0);
-      const fadeDuration = this.fadeDuration || this.duration;
-      if (fadeDuration > 0) {
-        const idlePart = parts.item(Number(!this.bottomToTop));
-        const activePart = parts.item(Number(this.bottomToTop));
-        timeline.fromTo(idlePart, fadeDuration, { autoAlpha: 1 }, { autoAlpha: 0, ease: this.ease }, 0);
-        timeline.fromTo(activePart, fadeDuration, { autoAlpha: 0 }, { autoAlpha: 1, ease: this.ease }, this.duration - this.fadeDuration);
-      }
+      const ease = this.ease;
+      timeline.fromTo(container, this.duration, { y: this.idleY }, { y: this.activeY, ease }, 0);
+
+      const fadeBackInDelay = this.duration - fadeDuration;
+      const idlePart = parts.item(Number(!this.bottomToTop));
+      const activePart = parts.item(Number(this.bottomToTop));
+      timeline.fromTo(idlePart, fadeDuration, { autoAlpha: 1 }, { autoAlpha: 0, ease }, 0);
+      timeline.fromTo(activePart, fadeDuration, { autoAlpha: 0 }, { autoAlpha: 1, ease }, fadeBackInDelay);
+
       this.masterTimeline.add(timeline, this.delay + wheel.delay);
     });
   }

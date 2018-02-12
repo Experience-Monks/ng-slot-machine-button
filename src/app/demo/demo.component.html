@@ -36,3 +36,52 @@
     </ng-slot-machine-wheel>
   </ng-slot-machine-button>
 </section>
+
+<section>
+  <h2>Disable one child</h2>
+  <ng-slot-machine-button
+    [activeOnHover]="true"
+  >
+    <ng-slot-machine-wheel
+      [delay]="0.1"
+    >
+      <div class="active part">Slot</div>
+      <div class="idle part">Slot</div>
+    </ng-slot-machine-wheel>
+    <ng-slot-machine-wheel
+      [delay]="0.2"
+    >
+      <div class="active part">Machine</div>
+      <div class="idle part">Machine</div>
+    </ng-slot-machine-wheel>
+    <div class="idle part" style="display:inline-flex;vertical-align:top;height:100%">Button</div>
+  </ng-slot-machine-button>
+</section>
+
+<section>
+  <h2>Fade back</h2>
+  <ng-slot-machine-button
+    [activeOnHover]="true"
+    [fadeBack]="true"
+    [fadeBackDuration]="0.3"
+  >
+    <ng-slot-machine-wheel
+      [delay]="0.1"
+    >
+      <div class="active part">Slot</div>
+      <div class="idle part">Slot</div>
+    </ng-slot-machine-wheel>
+    <ng-slot-machine-wheel
+      [delay]="0.2"
+    >
+      <div class="active part">Machine</div>
+      <div class="idle part">Machine</div>
+    </ng-slot-machine-wheel>
+    <ng-slot-machine-wheel
+      [delay]="0.3"
+    >
+      <div class="active part">Button</div>
+      <div class="idle part">Button</div>
+    </ng-slot-machine-wheel>
+  </ng-slot-machine-button>
+</section>

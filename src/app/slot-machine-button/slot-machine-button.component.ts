@@ -21,13 +21,16 @@ export class SlotMachineButtonComponent implements AfterContentInit {
   @Input()
   set isActive(active: boolean) {
     this.active = active;
-    active ? this.animateActive() : this.animateIdle();
+    if (this.ready) {
+      active ? this.animateActive() : this.animateIdle();
+    }
   }
   get isActive(): boolean {
     return this.active;
   }
   @ContentChildren(SlotMachineWheelComponent) wheels: QueryList<SlotMachineWheelComponent>;
 
+  private ready = false;
   private active: boolean;
   private idleY: string;
   private activeY: string;
@@ -74,6 +77,12 @@ export class SlotMachineButtonComponent implements AfterContentInit {
 
       this.masterTimeline.add(timeline, this.delay + wheel.delay);
     });
+
+    if (this.active) {
+      this.animateActive();
+    }
+
+    this.ready = true;
   }
 
   animateActive() {

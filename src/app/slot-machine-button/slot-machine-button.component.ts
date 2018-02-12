@@ -1,6 +1,6 @@
 // tslint:disable-next-line:max-line-length
 import { Component, AfterContentInit, Input, ContentChildren, HostListener, QueryList, ElementRef } from '@angular/core';
-import { Expo, TimelineLite } from 'gsap';
+import { TimelineLite, Expo, Linear } from 'gsap';
 
 import { SlotMachineWheelComponent } from './slot-machine-wheel.component';
 
@@ -22,12 +22,22 @@ export class SlotMachineButtonComponent implements AfterContentInit {
   set isActive(active: boolean) {
     this.active = active;
     if (this.ready) {
-      active ? this.animateActive() : this.animateIdle();
+      if (active) {
+        this.animateActive();
+      } else {
+        this.animateIdle();
+      }
     }
   }
   get isActive(): boolean {
     return this.active;
   }
+
+  // Fade Back
+  @Input() fadeBack: boolean;
+  @Input() fadeBackDuration: number;
+  @Input() fadeBackEase = Linear.easeNone;
+
   @ContentChildren(SlotMachineWheelComponent) wheels: QueryList<SlotMachineWheelComponent>;
 
   private ready = false;
@@ -35,6 +45,7 @@ export class SlotMachineButtonComponent implements AfterContentInit {
   private idleY: string;
   private activeY: string;
   private masterTimeline: TimelineLite;
+  private didPause = false;
 
   @HostListener('mouseenter') onmouseenter() {
     if (this.activeOnHover) { this.animateActive(); }
@@ -78,6 +89,23 @@ export class SlotMachineButtonComponent implements AfterContentInit {
       this.masterTimeline.add(timeline, this.delay + wheel.delay);
     });
 
+    if (this.fadeBack) {
+      const duration = this.fadeBackDuration;
+      if (duration === undefined) {
+        throw new Error('FadeBackDuration must be present if fadeBack is true');
+      } else if (isNaN(duration) || duration < 0) {
+        throw new Error('fadeBackDuration must be a number that\'s >=0');
+      }
+      this.masterTimeline.addPause('+=0', () => this.didPause = true);
+      this.masterTimeline.eventCallback('onStart', () => this.didPause = false);
+      this.masterTimeline.eventCallback('onComplete', () => this.didPause = false);
+      const position = this.bottomToTop ? 'bottom' : 'top';
+      const ease = this.fadeBackEase;
+      const idleParts = this.wheels.filter(wheel => this.groupID ? this.groupID === wheel.groupID : true)
+        .map(wheel => wheel.element.nativeElement.children.item(Number(!this.bottomToTop)));
+      this.masterTimeline.to(idleParts, duration, { position: 'absolute', [position]: 0, autoAlpha: 1, ease });
+    }
+
     if (this.active) {
       this.animateActive();
     }
@@ -86,11 +114,27 @@ export class SlotMachineButtonComponent implements AfterContentInit {
   }
 
   animateActive() {
-    return this.masterTimeline && this.masterTimeline.play && this.masterTimeline.play();
+    if (this.ready) {
+      if (this.fadeBack) {
+        this.masterTimeline.restart();
+      } else {
+        this.masterTimeline.play();
+      }
+    } else {
+      console.warn('Timeline is not ready, should wait for AfterContentInit');
+    }
   }
 
   animateIdle() {
-    return this.masterTimeline && this.masterTimeline.reverse && this.masterTimeline.reverse();
+    if (this.ready) {
+      if (this.fadeBack && this.didPause) {
+        this.masterTimeline.resume();
+      } else {
+        this.masterTimeline.reverse();
+      }
+    } else {
+      console.warn('Timeline is not ready, should wait for AfterContentInit');
+    }
   }
 
 }
